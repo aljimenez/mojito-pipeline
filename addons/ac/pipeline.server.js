@@ -560,7 +560,8 @@ YUI.add('mojito-pipeline-addon', function (Y, NAME) {
      * @constructor
      */
     function Pipeline(command, adapter, ac) {
-        var req = adapter.req;
+        var req = adapter.req,
+            jsEnabled;
 
         // Ensure pipeline is a singleton across requests.
         if (!req.globals) {
@@ -571,6 +572,8 @@ YUI.add('mojito-pipeline-addon', function (Y, NAME) {
         } else {
             return req.globals.pipeline;
         }
+
+        jsEnabled = ac.jscheck.status() === 'enabled';
 
         // The code below is only executed once, i.e., when this add-on is attached to the
         // frame mojit's action context.
@@ -583,8 +586,8 @@ YUI.add('mojito-pipeline-addon', function (Y, NAME) {
         this.client = {
             // The Pipeline client is flushed if the pipelineClient option is not set to false
             // and JS is enabled; otherwise the page is flushed all at once without the Pipeline client.
-            enabled: ac.config.get('pipelineClient') !== false && ac.jscheck.status() === 'enabled',
-            jsEnabled: ac.jscheck.status() === 'enabled',
+            enabled: ac.config.get('pipelineClient') !== false && jsEnabled,
+            jsEnabled: jsEnabled,
             script: null // String representation of the Pipeline client code, this is set in the setStore method.
         };
 
